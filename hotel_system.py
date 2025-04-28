@@ -102,10 +102,8 @@ class Room(ABC):
             else:
                 self._last_amenity_charges = 0.0
             self.bill = self._last_base_bill + self._last_cleaning_charge + self._last_amenity_charges
-
             self._check_in_time = None
             self._check_out_time = None
-            return guest_name
 
     def get_guest(self):
         return self.__guest

@@ -46,7 +46,6 @@ if room:
                 st.warning("⚠️ Guest name cannot be empty.")
             else:
                 room.check_in(guest_name)
-                st.rerun()
                 st.success(f"✅ Guest {guest_name} checked into Room {room_no}")
                 st.balloons()
 
@@ -55,8 +54,8 @@ if room:
           if room.is_available:
               st.error(f"❌ Room {room_no} is already available. No guest to check out.")
           else:
-              guest_name = room.check_out()
-              st.rerun()
+              guest_name = room.get_guest()
+              room.check_out()
               st.success(f"✅ Guest **{guest_name}** has successfully checked out from Room {room.room_no}!")
               st.session_state.checkout_history.append({
                   "Guest Name": guest_name,
@@ -104,7 +103,7 @@ for r in st.session_state.hotel.rooms[1:]:
         status = "Available" if r.is_available else "Occupied"
 
         if not r.is_available:
-            color = "red"
+            color = "crimson"
         else:
             if isinstance(r, StandardRoom) and not isinstance(r, (DeluxeRoom, ExecutiveSuite)):
                 color = "#90EE90"

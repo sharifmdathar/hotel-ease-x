@@ -70,6 +70,8 @@ class Room(ABC):
         self.__guest = None
         self._check_in_time = None
         self._check_out_time = None
+        self.__aadhar = None
+        self.__phone = None
         self.bill = 0.0
         self._last_base_bill = 0.0
         self._last_cleaning_charge = 0.0
@@ -82,13 +84,21 @@ class Room(ABC):
     def get_guest(self):
         return self.__guest
 
-    def check_in(self, guest_name: str, check_in_time: datetime = datetime.now()):
+    def get_aadhar(self):
+        return self.__aadhar
+
+    def get_phone(self): 
+        return self.__phone
+
+    def check_in(self, guest_name: str, check_in_time: datetime = datetime.now(), aadhar: str = None, phone: str = None):
         if not self.is_available:
             print(f"Room {self.room_no} is already occupied by {self.__guest}.")
         else:
             self.is_available = False
             self.__guest = guest_name
             self._check_in_time = check_in_time
+            self.__aadhar = aadhar
+            self.__phone = phone
             print(f"Guest {guest_name} checked into room {self.room_no} at {check_in_time}.")
 
     def check_out(self, check_out_time: datetime = datetime.now()):
@@ -101,7 +111,6 @@ class Room(ABC):
             print(f"Guest {guest_name} checked out of room {self.room_no}.")
             self.__guest = None
             self._check_out_time = check_out_time
-
             self._last_base_bill = self.calculate_base_bill(self.rate_per_day)
             self._last_cleaning_charge = 0 if self.is_cleaned else self.cleaning_fee
             if isinstance(self, DeluxeRoom):

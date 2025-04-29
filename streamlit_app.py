@@ -43,13 +43,19 @@ action = st.radio("Choose Action", ("Check In", "Check Out", "Request Cleaning",
 if room:
     if action == "Check In":
         guest_name = st.text_input("Guest Name")
+        aadhar = st.text_input("Aadhar Number")
+        phone = st.text_input("Phone Number")
         if st.button("Check In"):
-            if not room.is_available:
+            if not aadhar.isdigit() or len(aadhar) != 12:
+                st.warning("⚠️ Aadhar number is invalid")
+            elif not phone.isdigit() or len(phone) != 10:
+                st.warning("⚠️ Phone number is invalid")
+            elif not room.is_available:
                 st.error(f"❌ Room {room_no} is already occupied.")
             elif not guest_name.strip():
                 st.warning("⚠️ Guest name cannot be empty.")
             else:
-                room.check_in(guest_name)
+                room.check_in(guest_name, datetime.now(), aadhar, phone)
                 st.success(f"✅ Guest {guest_name} checked into Room {room_no}")
                 st.balloons()
 
@@ -64,6 +70,8 @@ if room:
               st.session_state.checkout_history.append({
                   "Guest Name": guest_name,
                   "Room No": room.room_no,
+                  "Aadhar": room.get_aadhar(),
+                  "Phone": room.get_phone(),
                   "Checkout Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                   "Total Bill": room.bill
               })

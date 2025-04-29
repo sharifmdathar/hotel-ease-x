@@ -2,27 +2,27 @@ import streamlit as st
 from datetime import datetime
 from hotel_system import Hotel, StandardRoom, DeluxeRoom, ExecutiveSuite
 
-st.set_page_config(page_title="Hotel Management System", page_icon="🏨")
+st.set_page_config(page_title="HotelEaseX  - Easy Hotel Management System", page_icon="🏨")
 if 'hotel' not in st.session_state:
     st.session_state.hotel = Hotel("Grand Python Hotel", total_rooms=10)
 if 'checkout_history' not in st.session_state:
     st.session_state.checkout_history = []
 
-st.title("🏨 Hotel Management System")
+st.title("🏨 HotelEaseX  - Easy Hotel Management System")
 
 room_numbers = [r.room_no for r in st.session_state.hotel.rooms if isinstance(r, (StandardRoom, DeluxeRoom, ExecutiveSuite))]
 room_no = st.selectbox("Select Room Number", room_numbers)
 
-def get_room_type_and_color(room):
+def get_room_type_color_and_price(room):
     if isinstance(room, ExecutiveSuite):
-        return "Executive Suite", "violet"
+        return "Executive Suite", "violet", "₹350/day"
     elif isinstance(room, DeluxeRoom):
-        return "Deluxe Room", "cyan"
+        return "Deluxe Room", "cyan", "₹200/day"
     else:
-        return "Standard Room", "#90EE90"
+        return "Standard Room", "#90EE90", "₹100/day"
 
 room = next((r for r in st.session_state.hotel.rooms if hasattr(r, 'room_no') and r.room_no == room_no), None)
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Room No", room.room_no)
     st.write("Room Status")
@@ -31,8 +31,12 @@ with col1:
 with col2:
     st.metric("Guest Name", room.get_guest() if not room.is_available else "N/A")
     st.write("Room Type")
-    room_type, color = get_room_type_and_color(room)
+    room_type, color, _ = get_room_type_color_and_price(room)
     st.markdown(f"<h2 style='color: {color}; padding-top: 0;'>{room_type}</h5>", unsafe_allow_html=True)
+with col3:
+    st.write("Price")
+    _, _, price = get_room_type_color_and_price(room)
+    st.markdown(f"<h2 style='padding-top: 0;'>{price}</h2>", unsafe_allow_html=True)
 
 action = st.radio("Choose Action", ("Check In", "Check Out", "Request Cleaning", "Add Amenity"))
 
@@ -115,13 +119,16 @@ for r in st.session_state.hotel.rooms[1:]:
                 color = "black"
         if isinstance(r, ExecutiveSuite):
             room_type = "Executive Suite"
+            price = "₹350/day"
         elif isinstance(r, DeluxeRoom):
             room_type = "Deluxe Room"
+            price = "₹200/day"
         else:
             room_type = "Standard Room"
+            price = "₹100/day"
 
         st.markdown(
-            f"<span style='color:{color}; font-size:18px'>Room {r.room_no} - <b>{room_type}</b> - {status}</span>",
+            f"<span style='color:{color}; font-size:18px'>Room {r.room_no} - <b>{room_type}</b> ({price}) - {status}</span>",
             unsafe_allow_html=True
         )
 if st.session_state.checkout_history:

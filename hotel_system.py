@@ -29,7 +29,7 @@ class AmenityProvider:
         self.amenity_charges = 0.0
 
     def add_amenity(self, amenity, charge, room_no):
-        self.amenities.append((amenity, charge))  # <<< store both
+        self.amenities.append((amenity, charge))
         self.amenity_charges += charge
         print(f"Added {amenity} to room no {room_no} for ${charge}")
 
@@ -75,6 +75,13 @@ class Room(ABC):
         self._last_cleaning_charge = 0.0
         self._last_amenity_charges = 0.0
 
+    @abstractmethod
+    def calculate_bill(self):
+        pass
+
+    def get_guest(self):
+        return self.__guest
+
     def check_in(self, guest_name: str, check_in_time: datetime = datetime.now()):
         if not self.is_available:
             print(f"Room {self.room_no} is already occupied by {self.__guest}.")
@@ -104,13 +111,6 @@ class Room(ABC):
             self.bill = self._last_base_bill + self._last_cleaning_charge + self._last_amenity_charges
             self._check_in_time = None
             self._check_out_time = None
-
-    def get_guest(self):
-        return self.__guest
-
-    @abstractmethod
-    def calculate_bill(self):
-        pass
 
 class StandardRoom(Room, BillingMixin, CleaningService):
     def __init__(self, hotel, room_no):
